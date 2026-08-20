@@ -5,11 +5,11 @@
 DB_CONN="hr/password"
 
 CSV_FILE=$1
-CTL_FILE="./ctl/transactions.ctl"
+CTL_FILE="./control/transactions.ctl"
 
-LOG_DIR="./logs"
-BAD_DIR="./bad"
-DISC_DIR="./discard"
+LOG_DIR="./tmp/logs"
+BAD_DIR="./tmp/bad"
+DISC_DIR="./tmp/discard"
 
 TS=$(date +"%Y%m%d%H%M%S")
 

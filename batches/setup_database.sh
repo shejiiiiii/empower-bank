@@ -2,7 +2,7 @@
 
 # batches/setup_database.sh
 
-LOG_DIR="./logs"
+LOG_DIR="./tmp/logs"
 
 TS=$(date +"%Y%m%d%H%M%S")
 

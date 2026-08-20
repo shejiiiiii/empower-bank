@@ -4,8 +4,8 @@
 
 DB_CONN="hr/password"
 
-REPORT_DIR="./output/reports"
-LOG_DIR="./logs"
+REPORT_DIR="./tmp/reports"
+LOG_DIR="./tmp/logs"
 
 mkdir -p "$REPORT_DIR" "$LOG_DIR"
 

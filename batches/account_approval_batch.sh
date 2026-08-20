@@ -5,7 +5,7 @@
 
 DB_CONN="hr/password"
 
-LOG_DIR="./logs"
+LOG_DIR="./tmp/logs"
 TS=$(date +"%Y%m%d%H%M%S")
 
 MAIN_LOG="$LOG_DIR/account_approval_${TS}.log"
