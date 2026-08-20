@@ -1,12 +1,10 @@
 #!/bin/bash
 
 # batches/statement_report_batch.sh
-# TO FIX: Clear the terminal after the user presses any key then display the menu again. 
-# Currently, the menu is displayed multiple times on the terminal.
 
 DB_CONN="hr/password"
 
-REPORT_DIR="./reports"
+REPORT_DIR="./output/reports"
 LOG_DIR="./logs"
 
 mkdir -p "$REPORT_DIR" "$LOG_DIR"
@@ -38,6 +36,7 @@ EOF
 while true
 do
 
+clear
 echo ""
 echo "========================================"
 echo "      EMPOWER BANK REPORT MENU"
@@ -52,15 +51,16 @@ read -p "Select Option: " OPTION
 case $OPTION in
 
 1)
+	read -p "Enter Account Number: " ACC_NO
 
-    read -p "Enter Account Number: " ACC_NO
+	if [ -z "$ACC_NO" ]; then
+		echo "ERROR: Missing Account Number."
+		read -n 1 -s -r -p "Press any key to continue..."
 
-    if [ -z "$ACC_NO" ]; then
-        echo "ERROR: Missing Account Number."
-        continue
-    fi
+		continue
+	fi
 
-    ACCOUNT_EXISTS=$(sqlplus -s "$DB_CONN" <<EOF
+	ACCOUNT_EXISTS=$(sqlplus -s "$DB_CONN" <<EOF
 SET PAGESIZE 0
 SET FEEDBACK OFF
 SET VERIFY OFF
@@ -74,27 +74,25 @@ EXIT;
 EOF
 )
 
-    ACCOUNT_EXISTS=$(echo "$ACCOUNT_EXISTS" | tr -d '[:space:]')
+	ACCOUNT_EXISTS=$(echo "$ACCOUNT_EXISTS" | tr -d '[:space:]')
 
-    if [ "$ACCOUNT_EXISTS" = "0" ]; then
+	if [ "$ACCOUNT_EXISTS" = "0" ]; then
 
-        echo ""
-        echo "Account Number is not registered in the bank."
+		echo ""
+		echo "Account Number is not registered in the bank."
 
-        echo "Invalid Account Attempt: $ACC_NO" \
-        >> "$MAIN_LOG"
+		echo "Invalid Account Attempt: $ACC_NO" \ >> "$MAIN_LOG"
+		read -n 1 -s -r -p "Press any key to continue..."
 
-        continue
+		continue
 
-    fi
+	fi
 
-    REPORT_FILE="$REPORT_DIR/account_${ACC_NO}_${TS}.csv"
+	REPORT_FILE="$REPORT_DIR/account_${ACC_NO}_${TS}.csv"
 
-    echo "AccountNo,FullName,TransactionDate,Amount,Interest,TransactionType" \
-    > "$REPORT_FILE"
+	echo "AccountNo,FullName,TransactionDate,Amount,Interest,TransactionType" \ > "$REPORT_FILE"
 
-    sqlplus -s "$DB_CONN" <<EOF >> "$REPORT_FILE"
-
+	sqlplus -s "$DB_CONN" <<EOF >> "$REPORT_FILE"
 SET PAGESIZE 0
 SET FEEDBACK OFF
 SET VERIFY OFF
@@ -116,7 +114,7 @@ WHERE R.ACCOUNT_NUMBER = '$ACC_NO';
 EXIT;
 EOF
 
-    RECORD_COUNT=$(sqlplus -s "$DB_CONN" <<EOF
+	RECORD_COUNT=$(sqlplus -s "$DB_CONN" <<EOF
 SET PAGESIZE 0
 SET FEEDBACK OFF
 SET VERIFY OFF
@@ -130,74 +128,84 @@ EXIT;
 EOF
 )
 
-    RECORD_COUNT=$(echo "$RECORD_COUNT" | tr -d '[:space:]')
+	RECORD_COUNT=$(echo "$RECORD_COUNT" | tr -d '[:space:]')
+	if [ "$RECORD_COUNT" = "0" ]; then
+		echo ""
+		echo "No transactions found for account $ACC_NO."
+		echo "No transactions found for account: $ACC_NO." \ >> "$MAIN_LOG"
 
-    echo ""
-    echo "Report Generated Successfully:"
-    echo "$REPORT_FILE"
+		rm -f "$REPORT_FILE"
+		read -n 1 -s -r -p "Press any key to continue..."
+		continue
+	fi
 
-    echo "Account Report Generated: $REPORT_FILE" \
-    >> "$MAIN_LOG"
+	echo ""
+	echo "Report Generated Successfully:"
+	echo "$REPORT_FILE"
 
-    echo "Records Returned: $RECORD_COUNT" \
-    >> "$MAIN_LOG"
+	echo "Account Report Generated: $REPORT_FILE" \ >> "$MAIN_LOG"
 
+	echo "Records Returned: $RECORD_COUNT" \ >> "$MAIN_LOG"
+
+	read -n 1 -s -r -p "Press any key to continue..."
+	continue
 ;;
 
 2)
+	read -p "Enter From Date (DD/MM/YYYY): " FROM_DATE
+	read -p "Enter To Date (DD/MM/YYYY): " TO_DATE
 
-    read -p "Enter From Date (DD/MM/YYYY): " FROM_DATE
-    read -p "Enter To Date (DD/MM/YYYY): " TO_DATE
+	if [ -z "$FROM_DATE" ] || [ -z "$TO_DATE" ]; then
+		echo "ERROR: Missing Date Input."
+		read -n 1 -s -r -p "Press any key to continue..."
 
-    if [ -z "$FROM_DATE" ] || [ -z "$TO_DATE" ]; then
-        echo "ERROR: Missing Date Input."
-        continue
-    fi
+		continue
+	fi
 
-    FROM_VALID=$(validate_date "$FROM_DATE")
-    TO_VALID=$(validate_date "$TO_DATE")
+	FROM_VALID=$(validate_date "$FROM_DATE")
+	TO_VALID=$(validate_date "$TO_DATE")
 
-    FROM_VALID=$(echo "$FROM_VALID" | tr -d '[:space:]')
-    TO_VALID=$(echo "$TO_VALID" | tr -d '[:space:]')
+	FROM_VALID=$(echo "$FROM_VALID" | tr -d '[:space:]')
+	TO_VALID=$(echo "$TO_VALID" | tr -d '[:space:]')
 
-    if [ "$FROM_VALID" != "1" ] || [ "$TO_VALID" != "1" ]; then
-        echo "ERROR: Invalid Date Format."
-        continue
-    fi
+	if [ "$FROM_VALID" != "1" ] || [ "$TO_VALID" != "1" ]; then
+		echo "ERROR: Invalid Date Format."
+		read -n 1 -s -r -p "Press any key to continue..."
 
-    DATE_COMPARE=$(sqlplus -s "$DB_CONN" <<EOF
+		continue
+	fi
+
+	DATE_COMPARE=$(sqlplus -s "$DB_CONN" <<EOF
 SET PAGESIZE 0
 SET FEEDBACK OFF
 SET VERIFY OFF
 SET HEADING OFF
 
 SELECT CASE
-         WHEN TO_DATE('$FROM_DATE','DD/MM/YYYY')
-              <=
-              TO_DATE('$TO_DATE','DD/MM/YYYY')
-         THEN 1
-         ELSE 0
-       END
+	WHEN TO_DATE('$FROM_DATE','DD/MM/YYYY') <= TO_DATE('$TO_DATE','DD/MM/YYYY')
+	THEN 1
+	ELSE 0
+END
 FROM DUAL;
 
 EXIT;
 EOF
 )
 
-    DATE_COMPARE=$(echo "$DATE_COMPARE" | tr -d '[:space:]')
+	DATE_COMPARE=$(echo "$DATE_COMPARE" | tr -d '[:space:]')
 
-    if [ "$DATE_COMPARE" != "1" ]; then
-        echo "ERROR: FROM_DATE must be less than or equal TO_DATE."
-        continue
-    fi
+	if [ "$DATE_COMPARE" != "1" ]; then
+		echo "ERROR: FROM_DATE must be less than or equal TO_DATE."
+		read -n 1 -s -r -p "Press any key to continue..."
 
-    REPORT_FILE="$REPORT_DIR/range_${TS}.csv"
+		continue
+	fi
 
-    echo "AccountNo,FullName,TransactionDate,Amount,Interest,TransactionType" \
-    > "$REPORT_FILE"
+	REPORT_FILE="$REPORT_DIR/range_${TS}.csv"
 
-    sqlplus -s "$DB_CONN" <<EOF >> "$REPORT_FILE"
+	echo "AccountNo,FullName,TransactionDate,Amount,Interest,TransactionType" \ > "$REPORT_FILE"
 
+	sqlplus -s "$DB_CONN" <<EOF >> "$REPORT_FILE"
 SET PAGESIZE 0
 SET FEEDBACK OFF
 SET VERIFY OFF
@@ -222,7 +230,7 @@ TO_DATE('$TO_DATE','DD/MM/YYYY');
 EXIT;
 EOF
 
-    RECORD_COUNT=$(sqlplus -s "$DB_CONN" <<EOF
+	RECORD_COUNT=$(sqlplus -s "$DB_CONN" <<EOF
 SET PAGESIZE 0
 SET FEEDBACK OFF
 SET VERIFY OFF
@@ -239,42 +247,47 @@ EXIT;
 EOF
 )
 
-    RECORD_COUNT=$(echo "$RECORD_COUNT" | tr -d '[:space:]')
+	RECORD_COUNT=$(echo "$RECORD_COUNT" | tr -d '[:space:]')
+	if [ "$RECORD_COUNT" = "0" ]; then
+		echo ""
+		echo "No transactions found within date range."
+		echo "No transactions found from $FROM_DATE to $TO_DATE" \ >> "$MAIN_LOG"
 
-    echo ""
-    echo "Report Generated Successfully:"
-    echo "$REPORT_FILE"
+		rm -f "$REPORT_FILE"
+		read -n 1 -s -r -p "Press any key to continue..."
+		continue
+	fi
 
-    echo "Date Range Report Generated: $REPORT_FILE" \
-    >> "$MAIN_LOG"
+	echo ""
+	echo "Report Generated Successfully:"
+	echo "$REPORT_FILE"
 
-    echo "Records Returned: $RECORD_COUNT" \
-    >> "$MAIN_LOG"
+	echo "Date Range Report Generated: $REPORT_FILE" \ >> "$MAIN_LOG"
 
+	echo "Records Returned: $RECORD_COUNT" \ >> "$MAIN_LOG"
+	
+	read -n 1 -s -r -p "Press any key to continue..."
+	continue
 ;;
 
 3)
+	echo ""
+	echo "Exiting..."
 
-    echo ""
-    echo "Exiting..."
+	echo "========================================" \ >> "$MAIN_LOG"
 
-    echo "========================================" \
-    >> "$MAIN_LOG"
+	echo "Statement Report Ended: $(date)" \ >> "$MAIN_LOG"
 
-    echo "Statement Report Ended: $(date)" \
-    >> "$MAIN_LOG"
-
-    echo "========================================" \
-    >> "$MAIN_LOG"
-
-    exit 0
+	echo "========================================" \ >> "$MAIN_LOG"
+	clear
+	exit 0
 
 ;;
 
 *)
-
-    echo "ERROR: Invalid Menu Option."
-
+	echo "ERROR: Invalid Menu Option."
+	read -n 1 -s -r -p "Press any key to continue..."
+	continue
 ;;
 
 esac

@@ -21,7 +21,11 @@ BEGIN
 		END IF;
 
 		IF IS_VALID_DATE(REC.BIRTHDAY) = 0 THEN
-			V_REASON := V_REASON || 'Invalid Birthday format; ';
+			V_REASON := V_REASON || 'Invalid Birthday; ';
+		ELSE
+			IF TO_DATE(REC.BIRTHDAY, 'DD/MM/YYYY') > TRUNC(SYSDATE) THEN
+				V_REASON := V_REASON || 'Future Birthday; ';
+			END IF;
 		END IF;
 
 		IF NOT REGEXP_LIKE(REC.WORKPHONE, '[0-9]{1,10}$') THEN
@@ -34,6 +38,18 @@ BEGIN
 
 		IF NOT REGEXP_LIKE(REC.ZIP, '[0-9]{1,10}$') THEN
 			V_REASON := V_REASON || 'Invalid Zip; ';
+		END IF;
+
+		IF NOT REGEXP_LIKE(REC.EMAIL, '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$') THEN
+			V_REASON := V_REASON || 'Invalid Email; ';
+		END IF;
+		
+		IF TRIM(REC.FIRSTNAME) IS NULL THEN
+			V_REASON := V_REASON || 'Missing FirstName; ';
+		END IF;
+
+		IF TRIM(REC.LASTNAME) IS NULL THEN
+			V_REASON := V_REASON || 'Missing LastName; ';
 		END IF;
 
 		IF V_REASON IS NULL THEN

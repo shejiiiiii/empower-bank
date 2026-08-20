@@ -1,0 +1,112 @@
+#!/bin/bash
+
+## batches/reset_database.sh
+
+DB_CONN="hr/password"
+
+echo "========================================"
+echo "Resetting Empower Bank Database"
+echo "========================================"
+
+sqlplus -s "$DB_CONN" <<EOF
+
+SET SERVEROUTPUT ON
+
+PROMPT Dropping foreign-key dependent tables...
+
+BEGIN
+    EXECUTE IMMEDIATE 'DROP TABLE TRANSACTIONINFO CASCADE CONSTRAINTS PURGE';
+EXCEPTION
+    WHEN OTHERS THEN
+        NULL;
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'DROP TABLE REGISTEREDINFO CASCADE CONSTRAINTS PURGE';
+EXCEPTION
+    WHEN OTHERS THEN
+        NULL;
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'DROP TABLE ACCOUNTREQUEST_REJECTED PURGE';
+EXCEPTION
+    WHEN OTHERS THEN
+        NULL;
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'DROP TABLE ACCOUNTREQUEST CASCADE CONSTRAINTS PURGE';
+EXCEPTION
+    WHEN OTHERS THEN
+        NULL;
+END;
+/
+
+PROMPT Dropping staging tables...
+
+BEGIN
+    EXECUTE IMMEDIATE 'DROP TABLE ACCOUNTREQUEST_STG PURGE';
+EXCEPTION
+    WHEN OTHERS THEN
+        NULL;
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'DROP TABLE TRANSACTIONINFO_STG PURGE';
+EXCEPTION
+    WHEN OTHERS THEN
+        NULL;
+END;
+/
+
+PROMPT Dropping sequences...
+
+BEGIN
+    EXECUTE IMMEDIATE 'DROP SEQUENCE REQ_ID_SEQ';
+EXCEPTION
+    WHEN OTHERS THEN
+        NULL;
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'DROP SEQUENCE TRANS_ID_SEQ';
+EXCEPTION
+    WHEN OTHERS THEN
+        NULL;
+END;
+/
+
+PROMPT Dropping functions...
+
+BEGIN
+    EXECUTE IMMEDIATE 'DROP FUNCTION IS_VALID_DATE';
+EXCEPTION
+    WHEN OTHERS THEN
+        NULL;
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'DROP FUNCTION CALCULATE_INTEREST';
+EXCEPTION
+    WHEN OTHERS THEN
+        NULL;
+END;
+/
+
+PROMPT Database reset completed successfully.
+
+EXIT;
+EOF
+
+echo ""
+echo "========================================"
+echo "Reset Complete"
+echo "Run ./batches/setup_database.sh next"
+echo "========================================"
