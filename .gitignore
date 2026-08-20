@@ -1,1 +1,5 @@
-/tmp
+/tmp/bad
+/tmp/discard
+/tmp/logs
+/tmp/reports
+.empower_bank_initialized
