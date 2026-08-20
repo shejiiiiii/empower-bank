@@ -84,7 +84,7 @@ DB_CONN="username/password"
 Example:
 
 ```bash
-DB_CONN="hr/hr"
+DB_CONN="hr/password"
 ```
 
 ---
