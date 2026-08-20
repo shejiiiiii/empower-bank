@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# batches/setup_database.sh
+
 LOG_DIR="./logs"
 
 TS=$(date +"%Y%m%d%H%M%S")
@@ -10,12 +12,7 @@ mkdir -p "$LOG_DIR"
 
 sqlplus -silent hr/password << EOF >> "$CREATE_LOG"
 
-@account_request_table.sql
-@registered_info_table.sql
-@transaction_info_table.sql
-@reject_table.sql
-@request_id_seq.sql
-@is_valid_date_function.sql
+@./database/install.sql
 
 EOF
 

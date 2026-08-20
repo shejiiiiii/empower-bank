@@ -1,11 +1,12 @@
 #!/bin/bash
 
-# Usage: ./load_accreq filename.csv
+# batches/account_requests_batch.sh
+# Usage: ./account_requests_batch.sh filename.csv
 
 DB_CONN="hr/password"
 
 CSV_FILE=$1
-CTL_FILE="accreq.ctl"
+CTL_FILE="./ctl/account_request.ctl"
 
 LOG_DIR="./logs"
 BAD_DIR="./bad"
@@ -13,10 +14,10 @@ DISC_DIR="./discard"
 
 TS=$(date +"%Y%m%d%H%M%S")
 
-MAIN_LOG="$LOG_DIR/accreq_${TS}.log"
-SQLLDR_LOG="$LOG_DIR/sqlldr_accreq_${TS}.log"
-BAD_FILE="$BAD_DIR/accreq_${TS}.log"
-DISC_FILE="$DISC_DIR/accreq_${TS}.log"
+MAIN_LOG="$LOG_DIR/account_request_${TS}.log"
+SQLLDR_LOG="$LOG_DIR/sqlldr_account_request_${TS}.log"
+BAD_FILE="$BAD_DIR/account_request_${TS}.bad"
+DISC_FILE="$DISC_DIR/account_request_${TS}.dis"
 
 mkdir -p "$LOG_DIR" "$BAD_DIR" "$DISC_DIR"
 
@@ -24,7 +25,7 @@ echo "Program Started at $(date)" > "$MAIN_LOG"
 
 if [ $# -ne 1 ]; then
 	echo "ERROR: Missing CSV file parameter." | tee -a "$MAIN_LOG"
-	echo "Usage: ./load_accreq.sh <file.csv>" | tee -a "$MAIN_LOG"
+	echo "Usage: ./account_requests_batch.sh <file.csv>" | tee -a "$MAIN_LOG"
 	exit 1
 fi
 
@@ -37,7 +38,7 @@ echo "Creating staging table..." | tee -a "$MAIN_LOG"
 
 sqlplus -s "$DB_CONN" << EOF >> "$MAIN_LOG"
 
-@staged_accreq.sql
+@./database/staging/create_account_requests_stg.sql
 
 EOF
 
@@ -62,7 +63,7 @@ sqlplus -s "$DB_CONN" << EOF >> "$MAIN_LOG"
 SET SERVEROUTPUT ON
 WHENEVER SQLERROR EXIT SQL.SQLCODE
 
-@process_accreq.sql
+@./database/procedures/prc_process_account_requests.sql
 
 EXIT;
 EOF
@@ -78,7 +79,7 @@ sqlplus -s "$DB_CONN" << EOF >> "$MAIN_LOG"
 SET SERVEROUTPUT ON
 WHENEVER SQLERROR EXIT SQL.SQLCODE
 
-@unstage_accreq.sql
+@./database/staging/drop_account_requests_stg.sql
 
 EXIT;
 EOF

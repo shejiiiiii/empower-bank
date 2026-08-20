@@ -1,3 +1,5 @@
+-- database/tables/create_registered_info.sql
+
 CREATE TABLE REGISTEREDINFO(
 	REQUESTID	NUMBER(10),
 	ACCOUNT_NUMBER	VARCHAR2(12),

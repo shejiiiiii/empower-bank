@@ -1,11 +1,11 @@
--- database/staging/drop_account_requests_stg.sql
+-- database/staging/drop_transaction_info.sql
 
 SET SERVEROUTPUT ON
 BEGIN
-	EXECUTE IMMEDIATE 'DROP TABLE ACCOUNTREQUEST_STG PURGE';
+	EXECUTE IMMEDIATE 'DROP TABLE TRANSACTIONINFO_STG PURGE';
 EXCEPTION WHEN OTHERS THEN
 	DBMS_OUTPUT.PUT_LINE('Could not drop staging table: ' || SQLERRM);
 END;
-
 /
 EXIT;
+

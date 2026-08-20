@@ -1,3 +1,5 @@
+-- database/tables/create_account_request_rejected.sql
+
 CREATE TABLE ACCOUNTREQUEST_REJECTED(
 	BRANCH		VARCHAR2(15),
 	ACCOUNT_TYPE	VARCHAR2(15),

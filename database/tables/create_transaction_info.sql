@@ -1,3 +1,5 @@
+-- database/tables/create_transaction_info.sql
+
 CREATE TABLE TRANSACTIONINFO(
 	TRANSACTIONID		NUMBER(10),
 	TRANSACTIONDATE		DATE,

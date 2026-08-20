@@ -1,3 +1,5 @@
+-- database/staging/create_account_requests_stg.sql
+
 WHENEVER SQLERROR EXIT
 SQL.SQLCODE
 

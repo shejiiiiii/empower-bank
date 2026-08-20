@@ -1,3 +1,5 @@
+-- database/tables/create_account_request.sql
+
 CREATE TABLE ACCOUNTREQUEST(
 	REQUESTID 	NUMBER(10),
 	BRANCH 		VARCHAR2(15),

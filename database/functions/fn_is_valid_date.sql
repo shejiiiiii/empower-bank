@@ -1,3 +1,5 @@
+-- database/functions/fn_is_valid_date.sql
+
 CREATE OR REPLACE FUNCTION IS_VALID_DATE(P_DATE VARCHAR2)
 RETURN NUMBER IS
 	V_DATE DATE;
