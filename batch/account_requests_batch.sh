@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# batches/account_requests_batch.sh
-# Usage: ./account_requests_batch.sh filename.csv
+# batch/account_requests_batch.sh
+# Usage: ./batch/account_requests_batch.sh filename.csv
 
 DB_CONN="hr/password"
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# batches/account_approval_batch.sh
-# TO FIX: Account number is using ONLY the FIRSTNAME of the user. Need to use the full name.
+# batch/account_approval_batch.sh
+# Usage: ./batch/account_approval_batch.sh
 
 DB_CONN="hr/password"
 

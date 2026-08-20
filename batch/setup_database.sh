@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# batches/setup_database.sh
+# batch/setup_database.sh
+# Usage: ./batch/setup_database.sh
 
 LOG_DIR="./tmp/logs"
 

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-## batches/reset_database.sh
+# batch/reset_database.sh
+# Usage: ./batch/reset_database.sh
 
 DB_CONN="hr/password"
 

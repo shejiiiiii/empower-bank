@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# batches/statement_report_batch.sh
+# batch/statement_report_batch.sh
+# Usage: ./batch/statement_report_batch.sh
 
 DB_CONN="hr/password"
 

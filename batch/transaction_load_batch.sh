@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# batches/transaction_load_batch.sh
+# batch/transaction_load_batch.sh
+# Usage: ./batch/transaction_load_batch.sh filename.csv
 
 DB_CONN="hr/password"
 
