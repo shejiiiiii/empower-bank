@@ -4,6 +4,7 @@
 @./database/tables/create_registered_info.sql
 @./database/tables/create_transaction_info.sql
 @./database/tables/create_account_request_rejected.sql
+@./database/tables/create_transaction_info_rejected.sql
 
 @./database/sequences/create_request_id_seq.sql
 @./database/sequences/create_transaction_id_seq.sql

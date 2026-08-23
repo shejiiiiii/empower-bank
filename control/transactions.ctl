@@ -1,4 +1,4 @@
--- ctl/transactions.ctl
+-- control/transactions.ctl
 
 LOAD DATA
 APPEND

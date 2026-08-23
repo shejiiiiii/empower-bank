@@ -1,0 +1,10 @@
+-- database/tables/create_transaction_info_rejected.sql
+
+CREATE TABLE TRANSACTIONINFO_REJECTED(
+    TRANSACTIONDATE     VARCHAR2(10),
+    ACCOUNT_NUMBER      VARCHAR2(12),
+    AMOUNT              VARCHAR2(8),
+    TRANSACTION_TYPE    VARCHAR2(2),
+    REJECT_REASON       VARCHAR2(300),
+    REJECT_DATE         DATE DEFAULT SYSDATE
+);

@@ -239,7 +239,8 @@ transaction_menu() {
         echo "============================================================"
         echo "1. Load transactions from CSV"
         echo "2. View TRANSACTIONINFO"
-        echo "3. Back"
+        echo "3. View TRANSACTIONINFO_REJECTED"
+        echo "4. Back"
         echo "============================================================"
         read -r -p "Select option: " choice
 
@@ -251,15 +252,27 @@ transaction_menu() {
                 elif [ ! -f "$csv_path" ]; then
                     echo "ERROR: File not found: $csv_path"
                 else
-                    run_script "transaction_load_batch.sh" "$csv_path"
+                    run_script "transaction_load_batch.sh" \
+                        "$csv_path"
                 fi
                 pause_menu
                 ;;
             2)
-                show_table "TRANSACTIONINFO" "TRANSACTIONID"
+                show_table \
+                    "TRANSACTIONINFO" \
+                    "TRANSACTIONID"
                 pause_menu
                 ;;
-            3) return 0 ;;
+            3)
+                show_table \
+                    "TRANSACTIONINFO_REJECTED" \
+                    "REJECT_DATE"
+
+                pause_menu
+                ;;
+            4)
+                return 0
+                ;;
             *)
                 echo "ERROR: Invalid option."
                 pause_menu

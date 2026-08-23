@@ -1,4 +1,4 @@
--- ctl/account_request.ctl
+-- control/account_request.ctl
 
 LOAD DATA
 APPEND
